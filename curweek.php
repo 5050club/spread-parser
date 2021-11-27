@@ -10,23 +10,23 @@ if( date('N') =="1" ){
 }
 
 //dow for strtotime should be on Tuesday
-if ($today > date('m/d/Y', strtotime("12/24/2019"))){$curweek='Week17';}
-else if ($today > date('m/d/Y', strtotime("12/17/2019"))){$curweek='Week16';}
-else if ($today > date('m/d/Y', strtotime("12/10/2019"))){$curweek='Week15';}
-else if ($today > date('m/d/Y', strtotime("12/03/2019"))){$curweek='Week14';}
-else if ($today > date('m/d/Y', strtotime("11/26/2019"))){$curweek='Week13';}
-else if ($today > date('m/d/Y', strtotime("11/19/2019"))){$curweek='Week12';}
-else if ($today > date('m/d/Y', strtotime("11/12/2019"))){$curweek='Week11';}
-else if ($today > date('m/d/Y', strtotime("11/05/2019"))){$curweek='Week10';}
-else if ($today > date('m/d/Y', strtotime("10/29/2019"))){$curweek='Week9';}
-else if ($today > date('m/d/Y', strtotime("10/22/2019"))){$curweek='Week8';}
-else if ($today > date('m/d/Y', strtotime("10/15/2019"))){$curweek='Week7';}
-else if ($today > date('m/d/Y', strtotime("10/08/2019"))){$curweek='Week6';}
-else if ($today > date('m/d/Y', strtotime("10/01/2019"))){$curweek='Week5';}
-else if ($today > date('m/d/Y', strtotime("09/24/2019"))){$curweek='Week4';}
-else if ($today > date('m/d/Y', strtotime("09/17/2019"))){$curweek='Week3';}
-else if ($today > date('m/d/Y', strtotime("09/10/2019"))){$curweek='Week2';}
-else if ($today > date('m/d/Y', strtotime("08/01/2019"))){$curweek='Week1';}
+if ($today > date('m/d/Y', strtotime("12/24/2021"))){$curweek='Week17';}
+else if ($today > date('m/d/Y', strtotime("12/17/2021"))){$curweek='Week16';}
+else if ($today > date('m/d/Y', strtotime("12/10/2021"))){$curweek='Week15';}
+else if ($today > date('m/d/Y', strtotime("12/03/2021"))){$curweek='Week14';}
+else if ($today > date('m/d/Y', strtotime("11/26/2021"))){$curweek='Week13';}
+else if ($today > date('m/d/Y', strtotime("11/19/2021"))){$curweek='Week12';}
+else if ($today > date('m/d/Y', strtotime("11/12/2021"))){$curweek='Week11';}
+else if ($today > date('m/d/Y', strtotime("11/05/2021"))){$curweek='Week10';}
+else if ($today > date('m/d/Y', strtotime("10/29/2021"))){$curweek='Week9';}
+else if ($today > date('m/d/Y', strtotime("10/22/2021"))){$curweek='Week8';}
+else if ($today > date('m/d/Y', strtotime("10/15/2021"))){$curweek='Week7';}
+else if ($today > date('m/d/Y', strtotime("10/08/2021"))){$curweek='Week6';}
+else if ($today > date('m/d/Y', strtotime("10/01/2021"))){$curweek='Week5';}
+else if ($today > date('m/d/Y', strtotime("09/24/2021"))){$curweek='Week4';}
+else if ($today > date('m/d/Y', strtotime("09/17/2021"))){$curweek='Week3';}
+else if ($today > date('m/d/Y', strtotime("09/10/2021"))){$curweek='Week2';}
+else if ($today > date('m/d/Y', strtotime("08/01/2021"))){$curweek='Week1';}
 else $curweek='Offseason';
 
 

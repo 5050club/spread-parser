@@ -1,8 +1,8 @@
 <?php
 
 ///////////  CURRENT USE
-$hostname_logon = 'db';      //Database server LOCATION
-$database_logon = '5050club_2019';       //Database NAME
+$hostname_logon = '0.0.0.0';      //Database server LOCATION
+$database_logon = '5050club_2021';       //Database NAME
 $username_logon = 'root';       //Database USERNAME
 $password_logon = 'root';       //Database PASSWORD
 
@@ -16,7 +16,7 @@ if( mysqli_connect_errno() ) {
 
 
 ////////// FUTURE USE
-$mysqli = new mysqli("db", "root", "root", "5050club_2019", 3306);
+$mysqli = new mysqli("0.0.0.0", "root", "root", "5050club_2021", 3306);
 if ($mysqli->connect_errno) {
     echo "Failed to connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
 }

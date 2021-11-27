@@ -1,10 +1,10 @@
 <?php
 
-include "/var/www/html//scripts/curweek.php";
-include "/var/www/html//engines/dbcnx.php";
+include "curweek.php";
+include "dbcnx.php";
 
 /*set log location and date*/
-$path = "/var/www/html//scripts/spread/logs/";
+$path = "logs/";
 shell_exec("touch $path$curweek.script.log");
 $outputfile = "$path" . "$curweek" . ".script.log";
 $now = date(DATE_RFC822) . "\n";
@@ -24,8 +24,8 @@ function execution_check($file, $curweek) {
 	return true;
   }
             //dow - 1 is Monday
-  else if( ($dow=="1" /*and $hod>=16 /*and $moh>1*/) or ($dow=="2") or ($dow=="4" and $hod>=16 /*and $moh>1*/) or ($dow=="7" and $hod>=11 /*and $moh>1*/) ) {
-        
+  #else if( ($dow=="1" /*and $hod>=16 /*and $moh>1*/) or ($dow=="2") or ($dow=="4" and $hod>=16 /*and $moh>1*/) or ($dow=="7" and $hod>=11 /*and $moh>1*/) ) {
+  else if($dow=="1") {
 	if(!is_writable($file)) {
                 echo "File is not writable, check permissions.\n";
         }
@@ -100,6 +100,7 @@ function properTeam($rawteam) {
 /*checks if we want to update spreads or not (for cron job) */
 
 if (!execution_check($outputfile, $curweek)) {
+        echo "stop here";
         exit(0);
 }
 
@@ -110,23 +111,31 @@ if (!execution_check($outputfile, $curweek)) {
 Where we download xml spread from pinnacle, parse it, update db
 /*******************************************************************************************
 
+//https://the-odds-api.com/
+// https://www.mybookie.ag/odds.xml
+// lines.betcris.com
 //get current cris xml feed and write it to file*/
-shell_exec("wget -q \"lines.betcris.com\" -O /var/www/html//scripts/spread/spreadfeed.xml");
+
+# uncomment after testing
+#shell_exec("curl -q \"https://www.mybookie.ag/odds.xml\" -o spreadfeed.xml");
 
 //create array that stores current games
-$xml=simplexml_load_file("/var/www/html//scripts/spread/spreadfeed.xml") or die("Error: Cannot create object");
+$xml=simplexml_load_file("spreadfeed.xml") or die("Error: Cannot create object");
+#print_r($xml->xpath('league[@IdLeague="1"]/game[@gpd="Game"]'));
 
 $games = array();
 $counter = 1;
 
-
 //foreach($xml->Leagues->league[0]->game as $event){
 
-$scope = $xml->xpath('/Data/Leagues/league[@IdLeague="1"]/game[@gpd="Game"]');
+# uncomment if it doesnt work
+# $scope = $xml->xpath('/Data/Leagues/league[@IdLeague="1"]/game[@gpd="Game"]');
+$scope = $xml->xpath('league[@IdLeague="1"]/game');
+#print_r($scope);
 
 foreach($scope as $event){
 
-
+  echo $event;
 //if( $event->attributes()->idgmtyp=="118" ){
 
   $crisid = $event->attributes()->idgm;
@@ -173,8 +182,8 @@ foreach($scope as $event){
 /********************************/
 /* Edit the entries below to reflect the appropriate values
 /********************************/
-$databasehost = "localhost";
-$databasename = "5050club_2019";
+$databasehost = "0.0.0.0";
+$databasename = "5050club_2021";
 $databaseusername ="root";
 $databasepassword = "root";
 $allgamesqueries = "";
@@ -228,7 +237,7 @@ foreach($games as $line) {
 	
 	/****  see if game exists in allgames table *****/
 	$gameexistsquery = $mysqli->query("SELECT count(*) as count from allgames where week='$curweek' and pinnacleid=$pinnacleid");
-	$gameexists = $gameexistsquery->fetch_assoc();
+	#$gameexists = $gameexistsquery->fetch_assoc();
 	//if the game doesnt exist in allgames table
 	if($gameexists['count'] == 0) {
 
@@ -242,7 +251,7 @@ foreach($games as $line) {
 			$gameid = $maxgameid['max(gameid)'] + 1;
 		}
 	
-		$gamequery = "INSERT INTO allgames (week,pinnacleid,gameid,date,favorite,underdog,spread,ATSwinner,winner) values('$curweek','$pinnacleid','$gameid','$date','$fav','$dog','$spread','','');";
+		$gamequery = "INSERT INTO allgames (week,/*pinnacleid,*/gameid,date,favorite,underdog,spread,ATSwinner,winner) values('$curweek',/*'$pinnacleid',*/'$gameid','$date','$fav','$dog','$spread','','');";
 	
 		//Add something here where we create default pick and wager for each member in the picks table
 		$membersquery = "SELECT memberid,defaultpick FROM members";
