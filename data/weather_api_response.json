@@ -1,0 +1,40 @@
+
+{
+    "current": {
+      "dt": 1618317040,
+      "temp": 284.07,
+      "feels_like": 282.84,
+      "wind_speed": 6,
+      "weather": [
+        {
+          "id": 500,
+          "main": "Rain",
+          "description": "light rain"
+        }
+      ]
+    },
+    "daily": [
+      {
+        "temp": {
+          "min": 275.09,
+          "max": 284.07
+        },
+        "wind_speed": 3.06,
+        "weather": [
+          {
+            "id": 500,
+            "main": "Rain",
+            "description": "light rain"
+          }
+        ]
+      }
+    ],
+    "alerts": [
+      {
+        "event": "Heat Advisory"
+      }
+    ]
+}
+                  
+  
+                
