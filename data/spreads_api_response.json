@@ -1,6 +1,3 @@
-// 20211130230853
-// https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds?apiKey=4e29d3bc02dc3dc900404ced1b879df0&regions=us&markets=spreads%2Ctotals&dateFormat=unix&oddsFormat=decimal
-
 [
     {
       "id": "5ebcd103baf35f33f02cc962eacd26b6",
