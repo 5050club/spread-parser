@@ -7,6 +7,8 @@ def get_spreads():
 
 def http_poller():
 
+    # my actual api key:  d79625dfeff1101a698ab3bca7324ed5
+    
     # sample code: https://the-odds-api.com/liveapi/guides/v4/samples.html
 
     # API key: 4e29d3bc02dc3dc900404ced1b879df0
