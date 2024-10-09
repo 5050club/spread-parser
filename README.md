@@ -1,93 +1,86 @@
 # spread-parser
 
 
+# fields
+## changes to make to es schema
+### add
+game.stadium_type, keyword  ->  get from teams.yaml.  examples - indoor, outdoor, retractable
+game.field_type, keyword  ->  get from teams.yaml.  examples - grass, turf
+game.weather.precipitation, float or short?  (this will represent a percent).  examples are "50", "30", "30"
 
-## Getting started
+## update
+game.team.home  ->  game.home_team
+game.team.away  ->  game.away_team
+all game.team.spread.* becomes game.spread.*
+game.spread.source  ->  game.source
+game.total.source  ->  game.source
+game.spread.odds.favorite, float -> game.spread.favorite_odds
+game.spread.odds.underdog, float -> game.spread.underdog_odds
+game.total.odds.over, float  ->  game.total.over_odds
+game.total.odds.under, float  ->  game.total.under_odds
+game.weather.main, keyword  -> game.weather.short_forecast, text;keyword
+game.weather.description, text  ->  game.weather.detailed_forecast, text
+game.weather.wind_speed, float  ->  keyword;text
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+### remove
+game.team, object
+game.spread.odds, object
+game.spread.home, float  ->  bookmakers[].markets[key=spreads].outcomes[].point (if .name is home)
+game.spread.away, float  ->  bookmakers[].markets[key=spreads].outcomes[].point (if .name is away)
+game.total.odds, object
+game.weather.feels_like, float  -> 
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## field mappings
+game, object
+*game.id, keyword  ->  id
+*game.home_team, text;keyword  ->  home_team
+*game.away_team, text;keyword  ->  away_team
+*game.kickoff, date  ->  commence_time
+*game.last_updated, date  ->  bookmakers[].last_update
+*game.source, keyword  ->  bookmakers[].title
+game.status, keyword  ->  ? this like for upcoming, live, completed or something?  is this in the data somehwere or I need to derive this value?
+--
+*game.location, geo_point  ->  /Users/j10s/apps/5050club/backend/teams.yaml has geo points and other info for given team.  will i ingest that and then pull that info in here for enrichment?
+*game.stadium_type, keyword  ->  get from teams.yaml.  examples - indoor, outdoor, retractable
+*game.field_type, keyword  ->  get from teams.yaml.  examples - grass, turf
+--
+game.weather, object  ->  
+*game.weather.temp: 62, 
+*game.weather.wind_speed: 3 to 10 mph, 
+*game.weather.precipitation: None, 
+*game.weather.short_forecast: Mostly Sunny, 
+*game.weather.detailed_forecast: Mostly sunny, with a high near 62. North wind 3 to 10 mph.
+game.weather.alerts, object
+game.weather.alerts.event, text  ->
+--  
+*game.spread, object
+*game.spread.favorite_team, text;keyword  ->  bookmakers[].markets[key=spreads].outcomes[].name (if .point is negative)
+*game.spread.underdog_team, text;keyword  ->  bookmakers[].markets[key=spreads].outcomes[].name (if .point is positive)
+*game.spread.favorite_points, float  ->  bookmakers[].markets[key=spreads].outcomes[].point (if point neg)
+*game.spread.underdog_points, float  ->  bookmakers[].markets[key=spreads].outcomes[].point (if point pos)
+*game.spread.favorite_odds, float -> bookmakers[].markets[key=spreads].outcomes[].price (if points neg)
+*game.spread.underdog_odds, float -> bookmakers[].markets[key=spreads].outcomes[].price (if points pos)
+--
+*game.total, object
+*game.total.over_under, float  ->  bookmakers[].markets[key=totals].outcomes[].price (need to pick one from over and under but should be same number always)
+*game.total.over_odds, float  ->  bookmakers[].markets[key=totals].outcomes[name=Over].price
+*game.total.under_odds, float  ->  bookmakers[].markets[key=totals].outcomes[name=Under].price
+# do i need to use /v4/sports/{sport}/scores to get this info.  do i take the event id and do a search on this endpoint to see if game is completed
+--
+game.result, object
+game.result.winner, text;keyword  ->  scores[].name (if score > other score)  what if there is a tie??
+game.result.loser, text;keyword  ->  scores[].name (if score < other score)
+game.result.winning_score, short  ->  scores[].score (if score > other score)
+game.result.losing_score, short  ->  scores[].score (if score <> other score)
+game.result.ats, text;keyword  ->  if (game.spread.favorite_team == game.result.winner) and (game.spread.favorite - (game.result.winning_score - game.result.losing_score)) > 0, then favorite.  otherwise underdog
+game.result.total, keyword  ->  if (game.result.total_points - game.total.over_under) = 0 push, < 0 under, > 0 over
+game.result.total_points  ->  sum(game.result.winning_score, game.result.losing_score)
 
-## Add your files
 
-- [ ] [Create](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+# feature requests
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/j1007/spread-parser.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://gitlab.com/j1007/spread-parser/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Automatically merge when pipeline succeeds](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing(SAST)](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!).  Thank you to [makeareadme.com](https://gitlab.com/-/experiment/new_project_readme_content:36b9a99807e51344436e1a9082c155f5?https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
-
+- ability to perform adhoc runs that dont just grab everything, but grab something specific
+  - check the api's to see what options can be provided w/ query.  that will drive what adhoc options are available here
+- some way to run parser (argo workflow/events for example)
+  - w/ a worker queue?
+- free version of api only allows 500 requests/mo or something.  that would be 500/31 = 16.13/day = 24/16.13 =  1.48 (round up) = 1 request every 2 hours.  (once every 2hrs = 12x/day = 372x/month).  maybe run more frequently on Sunday mornings.

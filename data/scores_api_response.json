@@ -1,0 +1,22 @@
+[
+    {
+        "id": "e912304de2b2ce35b473ce2ecd3d1502",
+        "sport_key": "americanfootball_nfl",
+        "sport_title": "NFL",
+        "commence_time": "2023-10-11T23:10:00Z",
+        "completed": true,
+        "home_team": "Houston Texans",
+        "away_team": "Kansas City Chiefs",
+        "scores": [
+            {
+                "name": "Houston Texans",
+                "score": "20"
+            },
+            {
+                "name": "Kansas City Chiefs",
+                "score": "34"
+            }
+        ],
+        "last_update": "2023-10-11T23:30:12Z"
+    }
+]
