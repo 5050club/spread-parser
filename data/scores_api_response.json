@@ -18,5 +18,36 @@
             }
         ],
         "last_update": "2023-10-11T23:30:12Z"
+    },
+    {
+        "id": "0dac14546d6008893a8b3b6c417472a6",
+        "sport_key": "americanfootball_nfl",
+        "sport_title": "NFL",
+        "commence_time": 1728605761,
+        "completed": False,
+        "home_team": "Seattle Seahawks",
+        "away_team": "San Francisco 49ers",
+        "scores": [
+            {
+                "name": "San Francisco 49ers",
+                "score": "3"
+            },
+            {
+                "name": "Seattle Seahawks",
+                "score": "0"
+            }
+        ],
+        "last_update": 1728607051
+    },
+    {
+        "id": "c1bcc8bbec33008ae587584b1b3de2d0",
+        "sport_key": "americanfootball_nfl",
+        "sport_title": "NFL",
+        "commence_time": 1728826200,
+        "completed": False,
+        "home_team": "Chicago Bears",
+        "away_team": "Jacksonville Jaguars",
+        "scores": None,
+        "last_update": None
     }
 ]
