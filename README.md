@@ -7,6 +7,12 @@
 game.stadium_type, keyword  ->  get from teams.yaml.  examples - indoor, outdoor, retractable
 game.field_type, keyword  ->  get from teams.yaml.  examples - grass, turf
 game.weather.precipitation, float or short?  (this will represent a percent).  examples are "50", "30", "30"
+game.weather.alerts.severity, keyword
+game.weather.alerts.event, keyword;text
+game.weather.alerts.description, text
+game.weather.alerts.expires, date
+game.location.lat, geo_point
+game.location.lon, geo_point
 
 ## update
 game.team.home  ->  game.home_team
@@ -21,6 +27,8 @@ game.total.odds.under, float  ->  game.total.under_odds
 game.weather.main, keyword  -> game.weather.short_forecast, text;keyword
 game.weather.description, text  ->  game.weather.detailed_forecast, text
 game.weather.wind_speed, float  ->  keyword;text
+game.weather.alerts.event, keyword;text
+game.location, geo_point  ->  game.location, object
 
 ### remove
 game.team, object
@@ -40,18 +48,23 @@ game, object
 *game.source, keyword  ->  bookmakers[].title
 game.status, keyword  ->  ? this like for upcoming, live, completed or something?  is this in the data somehwere or I need to derive this value?
 --
-*game.location, geo_point  ->  /Users/j10s/apps/5050club/backend/teams.yaml has geo points and other info for given team.  will i ingest that and then pull that info in here for enrichment?
+*game.location, object  ->  /Users/j10s/apps/5050club/backend/teams.yaml has geo points and other info for given team.  will i ingest that and then pull that info in here for enrichment?
+*game.location.lat, geo_point
+*game.location.lon, geo_point
 *game.stadium_type, keyword  ->  get from teams.yaml.  examples - indoor, outdoor, retractable
 *game.field_type, keyword  ->  get from teams.yaml.  examples - grass, turf
 --
-game.weather, object  ->  
-*game.weather.temp: 62, 
+*game.weather, object  ->  
+*game.weather.temp: 62
 *game.weather.wind_speed: 3 to 10 mph, 
 *game.weather.precipitation: None, 
 *game.weather.short_forecast: Mostly Sunny, 
 *game.weather.detailed_forecast: Mostly sunny, with a high near 62. North wind 3 to 10 mph.
-game.weather.alerts, object
-game.weather.alerts.event, text  ->
+*game.weather.alerts, object
+*game.weather.alerts.severity, keyword  ->  features[].properties.severity
+*game.weather.alerts.event, keyword;text  -> features[].properties.event
+*game.weather.alerts.description, text  ->  features[].properties.headline
+*game.weather.alerts.expires, date  ->  features[].properties.expires
 --  
 *game.spread, object
 *game.spread.favorite_team, text;keyword  ->  bookmakers[].markets[key=spreads].outcomes[].name (if .point is negative)
@@ -65,6 +78,7 @@ game.weather.alerts.event, text  ->
 *game.total.over_under, float  ->  bookmakers[].markets[key=totals].outcomes[].price (need to pick one from over and under but should be same number always)
 *game.total.over_odds, float  ->  bookmakers[].markets[key=totals].outcomes[name=Over].price
 *game.total.under_odds, float  ->  bookmakers[].markets[key=totals].outcomes[name=Under].price
+
 # do i need to use /v4/sports/{sport}/scores to get this info.  do i take the event id and do a search on this endpoint to see if game is completed
 --
 game.result, object
@@ -76,6 +90,11 @@ game.result.ats, text;keyword  ->  if (game.spread.favorite_team == game.result.
 game.result.total, keyword  ->  if (game.result.total_points - game.total.over_under) = 0 push, < 0 under, > 0 over
 game.result.total_points  ->  sum(game.result.winning_score, game.result.losing_score)
 
+
+# questions
+- at what point does a game no longer show up in the odds api.  
+  - how do i make sure i know to get score info for that game
+  - how do i limit the number of calls to api.  will i need to check latest in es for game being complete and then i dont have to query api for it anymore.
 
 # feature requests
 
