@@ -1,4 +1,4 @@
-from elasticsearch import Elasticsearch
+from elasticsearch import Elasticsearch, helpers
 import requests
 import json
 import yaml
@@ -10,6 +10,13 @@ from datetime import datetime, timezone
 def get_odds():
     results = http_poller()
     return results
+
+def get_teams():
+   
+    client = Elasticsearch("https://localhost:9200/", verify_certs=False, api_key="T2dEZnJKSUJtT2RjdnlGQllreF86MXJfVE5ucVlTN09kT1pzb3ZGd1YyUQ==")
+    
+    teams = client.search(index="teams", size=100)
+    return teams._body['hits']['hits']
 
 def http_poller():
 
@@ -61,6 +68,8 @@ def http_poller():
 
 def parser(data):
     
+    teams = get_teams()
+    
     entry = {}
     
     #for game in (game for game in data if game["id"] == "0dac14546d6008893a8b3b6c417472a6"):  # this list comprehension will go away.  here only for limiting results to 1 during dev
@@ -85,7 +94,7 @@ def parser(data):
         else:
             entry["game"]["status"] = 'live'
 
-        location = get_location_info(game["home_team"])
+        location = get_location_info(game["home_team"], teams)
         entry["game"].update(location)
 
         weather = get_weather(entry.get("game").get("location").get("lat"), entry.get("game").get("location").get("lon"), entry.get("game").get("kickoff"))
@@ -126,19 +135,16 @@ def parser(data):
         
         es_ingest(entry)
 
-def get_location_info(home_team):
+def get_location_info(home_team, teams):
     
     location = {}
     location["location"] = {}
-    # TODO: ingest teams.yaml to es and then here we need to pull from there.  would be nice to have a way to update team info w/o needing to update yaml file inside container
 
-    teams_y = open('/Users/j10s/apps/5050club/backend/data/teams.yaml', "r")
-    teams_d=yaml.load(teams_y, Loader=yaml.SafeLoader)
-    
-    location["location"]["lat"] = teams_d.get(home_team).get("lat")
-    location["location"]["lon"] = teams_d.get(home_team).get("lon")
-    location["stadium_type"] = teams_d.get(home_team).get("stadium")
-    location["field_type"] = teams_d.get(home_team).get("field")
+    for team in (team for team in teams if team['_source'].get('team').get('id') == home_team):
+        location["location"]["lat"] = team['_source'].get('team').get('location').get('lat')
+        location["location"]["lon"] = team['_source'].get('team').get('location').get('lon')
+        location["stadium_type"] = team['_source'].get('team').get('stadium')
+        location["field_type"] = team['_source'].get('team').get('field')
     
     return location
 
