@@ -51,7 +51,7 @@ def parse_scores(allscores):
     # next step is to ???...loop through allscores, find matching game id in ES in "latest".  check its status.  if completed then it already has result if not, grab that doc, merge w/ scores, ingest new document and set status to completed
     allgames = []
     
-    for score in (score for score in allscores if score.get('completed') == True and score['scores']):
+    for score in (score for score in allscores if score.get('completed') and score['scores']):
 
         id = score.get('id')
 
@@ -79,7 +79,7 @@ def parse_scores(allscores):
 
         resp = es_search(index="allgames_latest", query=query)
 
-        if resp and resp[0].get('_source').get('game').get('completed') != True:
+        if resp and not resp[0].get('_source').get('game').get('completed'):
             game = resp[0].get('_source')
             game['game']['completed'] = True
             game['game']['last_updated'] = int(score.get('last_update'))*1000

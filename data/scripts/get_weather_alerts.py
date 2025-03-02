@@ -1,6 +1,6 @@
 import requests
 
-alerts_url = f'https://api.weather.gov/alerts/active'
+alerts_url = 'https://api.weather.gov/alerts/active'
 
 lon=-81.37
 lat=30.24
