@@ -1,5 +1,10 @@
 # spread-parser
 
+# next steps
+
+- rework parser.py and the flow from get_odds to http_poller to parser etc.  probably also part of the piece around introduce classes
+- convert to using a classes: get odds, process odds, scores, ingest to es
+- what parameters do i want to pass in here? examples - only get odds, only get scores, only get info for one game, only get weather?
 
 # fields
 ## changes to make to es schema
@@ -81,19 +86,20 @@ game.status, keyword  ->  ? this like for upcoming, live, completed or something
 
 # do i need to use /v4/sports/{sport}/scores to get this info.  do i take the event id and do a search on this endpoint to see if game is completed
 --
-game.result, object
-game.result.winner, text;keyword  ->  scores[].name (if score > other score)  what if there is a tie??
-game.result.loser, text;keyword  ->  scores[].name (if score < other score)
-game.result.winning_score, short  ->  scores[].score (if score > other score)
-game.result.losing_score, short  ->  scores[].score (if score <> other score)
-game.result.ats, text;keyword  ->  if (game.spread.favorite_team == game.result.winner) and (game.spread.favorite - (game.result.winning_score - game.result.losing_score)) > 0, then favorite.  otherwise underdog
-game.result.total, keyword  ->  if (game.result.total_points - game.total.over_under) = 0 push, < 0 under, > 0 over
-game.result.total_points  ->  sum(game.result.winning_score, game.result.losing_score)
+game.results, object
+game.results.winner, text;keyword  ->  scores[].name (if score > other score)  what if there is a tie??
+game.results.loser, text;keyword  ->  scores[].name (if score < other score)
+game.results.winning_score, short  ->  scores[].score (if score > other score)
+game.results.losing_score, short  ->  scores[].score (if score <> other score)
+game.results.ats_winner, text;keyword  ->  if (game.spread.favorite_team == game.result.winner) and (game.spread.favorite - (game.result.winning_score - game.result.losing_score)) > 0, then favorite.  otherwise underdog
+game.results.total, keyword  ->  if (game.result.total_points - game.total.over_under) = 0 push, < 0 under, > 0 over
+game.results.total_points  ->  sum(game.result.winning_score, game.result.losing_score)
 
 
 # questions
 - at what point does a game no longer show up in the odds api.  
   - how do i make sure i know to get score info for that game
+  - can i somehow use that to apply some logic where a game that doesnt have a score but isnt in the odds resp, then go query the scores endpoint.  but also need to limit api calls
   - how do i limit the number of calls to api.  will i need to check latest in es for game being complete and then i dont have to query api for it anymore.
 
 # feature requests
@@ -103,3 +109,4 @@ game.result.total_points  ->  sum(game.result.winning_score, game.result.losing_
 - some way to run parser (argo workflow/events for example)
   - w/ a worker queue?
 - free version of api only allows 500 requests/mo or something.  that would be 500/31 = 16.13/day = 24/16.13 =  1.48 (round up) = 1 request every 2 hours.  (once every 2hrs = 12x/day = 372x/month).  maybe run more frequently on Sunday mornings.
+  - will need to refactor this math as additional calls will need to be made on Sundays to get scores as thats a separate endpoint

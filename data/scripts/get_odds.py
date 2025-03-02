@@ -5,6 +5,7 @@
 ###
 
 import requests
+import json
 
 sport = 'americanfootball_nfl'
 
@@ -12,7 +13,7 @@ payload = {
     'api_key': 'd79625dfeff1101a698ab3bca7324ed5',
     'regions': 'us',
     'markets': 'spreads,totals',
-    'bookmakers': 'williamhill_us',
+    'bookmakers': 'draftkings',
     'dateFormat': 'unix',
     'oddsFormat': 'decimal'
 }
@@ -26,6 +27,10 @@ else:
     odds_json = odds_response.json()
     print('Number of events:', len(odds_json))
     print(odds_json)
+
+    # write results to file
+    f = open('/Users/j10s/apps/5050club/spread-parser/data/odds_api_response.json', 'w')
+    f.write(json.dumps(odds_json))
 
     # Check the usage quota
     print('Remaining requests', odds_response.headers['x-requests-remaining'])
