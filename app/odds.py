@@ -7,10 +7,12 @@ import time
 
 # In a perfect world some things would be done differently here.  But limited API calls per month forces certain decisions to be made that otherwise would not be the best approach.
 
+es_url = "https://localhost:9200/"
+
 def get_teams():
    
     #TODO: modify this to use es_search() method
-    client = Elasticsearch("https://localhost:9200/", verify_certs=False, ssl_show_warn=False, api_key="T2dEZnJKSUJtT2RjdnlGQllreF86MXJfVE5ucVlTN09kT1pzb3ZGd1YyUQ==")
+    client = Elasticsearch(es_url, verify_certs=False, ssl_show_warn=False, api_key="T2dEZnJKSUJtT2RjdnlGQllreF86MXJfVE5ucVlTN09kT1pzb3ZGd1YyUQ==")
     
     teams = client.search(index="teams", size=100)
     return teams._body['hits']['hits']
@@ -37,7 +39,7 @@ def get_weather_alerts(lat, lon, headers):
     # TODO: pass in game.kickoff time to this function.  in the mean time...
     kickoff = 1729443600 #(oct 20, 1pm)
 
-    alerts_url = f'https://api.weather.gov/alerts/active'
+    alerts_url = 'https://api.weather.gov/alerts/active'
 
     # temporary hard code just to get some results
     lon=-81.37
@@ -96,7 +98,7 @@ def get_weather(lat, lon, kickoff):
 
 def es_search(index=None, query=None):
 
-    client = Elasticsearch("https://localhost:9200/", verify_certs=False, ssl_show_warn=False, api_key="T2dEZnJKSUJtT2RjdnlGQllreF86MXJfVE5ucVlTN09kT1pzb3ZGd1YyUQ==")
+    client = Elasticsearch(es_url, verify_certs=False, ssl_show_warn=False, api_key="T2dEZnJKSUJtT2RjdnlGQllreF86MXJfVE5ucVlTN09kT1pzb3ZGd1YyUQ==")
     
     resp = client.search(index=index, body=query)
 
@@ -112,9 +114,11 @@ def es_ingest(results):
     #un = "j10s"
     #api_key = "T2dEZnJKSUJtT2RjdnlGQllreF86MXJfVE5ucVlTN09kT1pzb3ZGd1YyUQ=="
 
-    client = Elasticsearch("https://localhost:9200/", verify_certs=False, ssl_show_warn=False, api_key="T2dEZnJKSUJtT2RjdnlGQllreF86MXJfVE5ucVlTN09kT1pzb3ZGd1YyUQ==")
+    client = Elasticsearch(es_url, verify_certs=False, ssl_show_warn=False, api_key="T2dEZnJKSUJtT2RjdnlGQllreF86MXJfVE5ucVlTN09kT1pzb3ZGd1YyUQ==")
 
     resp = client.index(index="5050club", document=results)
+
+    # TODO: what are we doing with resp?
 
     client.indices.refresh(index="5050club")
 
