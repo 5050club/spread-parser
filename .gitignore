@@ -2,7 +2,8 @@
 .ruff_cache
 .venv
 .DS_Store
-app/__pycache__/
-app/.pytest_cache/
-tests/__pycache__/
-test/.pytest_cache/
+src/app/__pycache__/
+tests/integration/__pycache__/
+test/integration/.pytest_cache/
+tests/unit/__pycache__/
+test/unit/.pytest_cache/
